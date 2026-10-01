@@ -172,6 +172,24 @@ function get(obj, key, fallback) {
   return obj && obj[key] !== undefined ? obj[key] : fallback || '';
 }
 
+function renderNavItems(data) {
+  const items = [
+    { id: 'chapter-01', num: '01', label: get(data.chapter01, 'Label', 'Profile') },
+    { id: 'chapter-02', num: '02', label: get(data.chapter02, 'Label', 'The Vow') },
+    { id: 'chapter-03', num: '03', label: get(data.chapter03, 'Label', 'Scars') },
+    { id: 'chapter-04', num: '04', label: get(data.chapter04, 'Label', 'The Craft') },
+    { id: 'chapter-05', num: '05', label: get(data.chapter05, 'Label', 'Beyond the Page') },
+    { id: 'bibliography', num: 'II', label: get(data.volume, 'Title', 'The Bibliography') },
+    { id: 'colophon', num: '—', label: 'Colophon' },
+  ];
+  return items
+    .map(
+      (item) =>
+        `    <li><a href="#${item.id}" data-nav-link><span class="nav-list-num">${item.num}</span><span class="nav-list-label">${inline(item.label)}</span></a></li>`
+    )
+    .join('\n');
+}
+
 function build() {
   const raw = fs.readFileSync(CONTENT_PATH, 'utf8');
   const data = parseContent(raw);
@@ -220,6 +238,7 @@ function build() {
     'colophon.meta': get(data.colophon, 'Meta'), // allows the <br/> in content.md
 
     'timeline.entries': renderTimelineEntries(data.timeline || []),
+    'nav.items': renderNavItems(data),
   };
 
   for (const [token, value] of Object.entries(simpleReplacements)) {

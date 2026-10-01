@@ -18,10 +18,11 @@
     --bone:#ece3da;
     --ash:#938377;
     --ash-dim:#5e5349;
+    --nav-h:64px;
   }
 
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; scroll-padding-top:calc(var(--nav-h) + 10px);}
   body{
     margin:0;
     background:var(--ink);
@@ -33,6 +34,7 @@
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
+  body.nav-open{ overflow:hidden; }
 
   h1,h2,h3{font-family:'Shippori Mincho',serif; font-weight:600; text-wrap:balance; margin:0;}
   .eyebrow{
@@ -46,6 +48,13 @@
   a{color:inherit;}
   img{max-width:100%; display:block;}
 
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--ember); outline-offset:3px; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+
   /* grain overlay */
   .grain{
     position:fixed; inset:0; pointer-events:none; z-index:999;
@@ -53,38 +62,116 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* scroll progress spine */
-  .progress-rail{
-    position:fixed; top:0; left:10px; width:2px; height:100%; z-index:998;
-    background:linear-gradient(var(--line),var(--line));
-    display:none;
+  /* ===== NAV ===== */
+  .site-nav{
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    height:var(--nav-h);
+    display:flex; align-items:center;
+    padding:0 24px;
+    background:rgba(10,7,7,.74);
+    backdrop-filter:blur(10px) saturate(1.2);
+    -webkit-backdrop-filter:blur(10px) saturate(1.2);
+    border-bottom:1px solid var(--line);
   }
-  .progress-fill{
-    position:absolute; top:0; left:0; width:100%; height:0%;
-    background:linear-gradient(var(--blood-deep),var(--ember));
-    box-shadow:0 0 12px var(--blood);
-  }
-  @media(min-width:900px){ .progress-rail{display:block;} }
 
-  .wrap{max-width:1180px; margin:0 auto; position:relative;}
+  /* inline nav links shown directly in the header (desktop) */
+  .site-nav-links{ min-width:0; overflow:hidden; }
+  .nav-inline{
+    display:flex; align-items:center; gap:2px; list-style:none; margin:0; padding:0;
+    overflow-x:auto; scrollbar-width:none;
+  }
+  .nav-inline::-webkit-scrollbar{ display:none; }
+  .nav-inline li{ flex:none; }
+  .nav-inline a{
+    display:flex; align-items:center; min-height:44px;
+    padding:0 13px; text-decoration:none; white-space:nowrap;
+    font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em;
+    font-size:.82rem; color:var(--ash);
+    transition:color .2s;
+  }
+  .nav-inline .nav-list-num{ display:none; }
+  .nav-inline a:hover, .nav-inline a.is-active{ color:var(--ember); }
+
+  /* toggle + off-canvas panel shown only on narrow screens */
+  .site-nav-toggle{
+    display:none; align-items:center; gap:10px; margin-left:auto;
+    background:transparent; border:1px solid var(--line); color:var(--bone);
+    font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.2em;
+    font-size:.82rem; padding:9px 16px; min-height:44px; cursor:pointer;
+    transition:border-color .2s, color .2s;
+  }
+  .site-nav-toggle:hover{ border-color:var(--blood); color:var(--ember); }
+  @media(max-width:860px){
+    .site-nav-links{ display:none; }
+    .site-nav-toggle{ display:flex; }
+  }
+  .site-nav-toggle-bars{ position:relative; width:16px; height:10px; flex:none; }
+  .site-nav-toggle-bars::before, .site-nav-toggle-bars::after{
+    content:""; position:absolute; left:0; right:0; height:1px; background:currentColor;
+  }
+  .site-nav-toggle-bars::before{ top:0; }
+  .site-nav-toggle-bars::after{ bottom:0; }
+
+  .nav-progress{ position:absolute; left:0; right:0; bottom:-1px; height:3px; }
+  .nav-progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--blood-deep),var(--ember));
+    box-shadow:0 0 8px var(--blood);
+  }
+
+  .nav-backdrop{
+    position:fixed; inset:0; z-index:1001;
+    background:rgba(5,3,3,.7);
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  .nav-panel{
+    position:fixed; top:0; right:0; bottom:0; z-index:1002;
+    width:min(360px, 86vw);
+    background:var(--ink-raised);
+    border-left:1px solid var(--line);
+    padding:calc(var(--nav-h) + 26px) 8px 40px;
+    transform:translateX(100%);
+    transition:transform .35s cubic-bezier(.2,.7,.2,1);
+    overflow-y:auto;
+  }
+  body.nav-open .nav-backdrop{ opacity:1; pointer-events:auto; }
+  body.nav-open .nav-panel{ transform:translateX(0); }
+
+  .nav-list{ list-style:none; margin:0; padding:0; }
+  .nav-list li + li{ border-top:1px solid var(--line); }
+  .nav-list a{
+    display:flex; align-items:baseline; gap:16px;
+    padding:18px 16px; text-decoration:none; color:var(--ash);
+    min-height:48px;
+    transition:color .2s, padding-left .2s;
+  }
+  .nav-list a:hover, .nav-list a.is-active{ color:var(--bone); padding-left:22px; }
+  .nav-list a.is-active .nav-list-num{ color:var(--ember); }
+  .nav-list-num{
+    font-family:'Shippori Mincho',serif; color:var(--blood); font-size:1.1rem; width:28px; flex:none;
+  }
+  .nav-list-label{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:1rem; }
+
+  .wrap{max-width:1180px; margin:0 auto; position:relative; padding-top:var(--nav-h);}
   section{position:relative;}
 
   /* ===== HERO ===== */
   .hero{
-    min-height:86vh;
+    min-height:80vh;
     display:grid;
     grid-template-columns:1.1fr .9fr;
     align-items:center;
     gap:40px;
-    padding-top:72px;
+    padding-top:48px;
     padding-bottom:48px;
+    overflow:hidden;
   }
   .hero-copy{position:relative; z-index:2;}
   .hero-slash{
     position:absolute; top:-40px; left:-60px; width:520px; max-width:60vw; opacity:.9; z-index:0;
   }
   .hero-title{
-    font-size:clamp(3.4rem, 8vw, 6.4rem);
+    font-size:clamp(2.6rem, 11vw, 6.4rem);
     line-height:.96;
     letter-spacing:-.01em;
     margin:18px 0 22px;
@@ -118,6 +205,7 @@
     position:relative;
     display:flex; justify-content:center; align-items:flex-end;
     height:100%;
+    z-index:1;
   }
   .hero-figure::before{
     content:"";
@@ -125,12 +213,15 @@
     background:radial-gradient(ellipse at 60% 40%, rgba(156,20,40,.35), transparent 65%);
     filter:blur(10px);
     z-index:0;
+    animation:glow-breathe 7s ease-in-out infinite;
   }
   .hero-figure img{
     position:relative; z-index:1;
-    max-height:74vh; width:auto;
+    max-height:70vh; width:auto;
     filter:drop-shadow(0 30px 60px rgba(0,0,0,.7)) drop-shadow(0 0 40px rgba(156,20,40,.25));
   }
+  @keyframes glow-breathe{ 0%,100%{ opacity:.7; } 50%{ opacity:1; } }
+
   .scroll-cue{
     display:block;
     margin-top:46px;
@@ -138,10 +229,28 @@
     font-size:.75rem; color:var(--ash-dim);
   }
 
+  /* ambient embers */
+  .embers{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
+  .embers span{
+    position:absolute; bottom:-10px; width:3px; height:3px; border-radius:50%;
+    background:var(--ember); box-shadow:0 0 6px 2px rgba(255,59,78,.6);
+    opacity:0; animation-name:ember-rise; animation-timing-function:ease-in; animation-iteration-count:infinite;
+  }
+  @keyframes ember-rise{
+    0%{ transform:translate(0,0); opacity:0; }
+    12%{ opacity:.85; }
+    88%{ opacity:.25; }
+    100%{ transform:translate(14px,-62vh); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .embers{ display:none; }
+    .hero-figure::before{ animation:none; opacity:.85; }
+  }
+
   @media(max-width:860px){
-    .hero{grid-template-columns:1fr; padding-top:56px; min-height:auto;}
+    .hero{grid-template-columns:1fr; padding-top:30px; min-height:auto;}
     .hero-figure{order:-1; height:auto;}
-    .hero-figure img{max-height:52vh;}
+    .hero-figure img{max-height:48vh;}
     .hero-slash{display:none;}
   }
 
@@ -152,7 +261,11 @@
     display:grid;
     grid-template-columns:200px 1fr;
     gap:48px;
+    opacity:1;
+    transform:translateY(16px);
+    transition:transform .7s cubic-bezier(.2,.7,.2,1);
   }
+  .chapter.is-revealed{ transform:translateY(0); }
   .chapter-marker{position:relative;}
   .chapter-num{
     font-family:'Shippori Mincho',serif;
@@ -252,6 +365,8 @@
 
   .scrap-solo{ margin-top:30px; transform:rotate(-3deg); }
 
+  .scrap-img-right{ object-position:78% center; }
+
   /* interests tag list */
   .taglist{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; max-width:64ch;}
   .tag{
@@ -280,7 +395,13 @@
   .spine{
     position:absolute; top:0; bottom:0; left:50%;
     width:2px; transform:translateX(-50%);
-    background:linear-gradient(var(--line), var(--blood-deep) 10%, var(--blood) 50%, var(--blood-deep) 90%, var(--line));
+    background:var(--line);
+    overflow:hidden;
+  }
+  .spine-fill{
+    position:absolute; top:0; left:0; width:100%; height:0%;
+    background:linear-gradient(var(--blood-deep), var(--ember));
+    box-shadow:0 0 14px var(--blood);
   }
   .entry{
     position:relative;
@@ -289,15 +410,25 @@
     padding:26px 28px;
     background:var(--ink-raised);
     border:1px solid var(--line);
+    opacity:1;
+    transition:transform .7s cubic-bezier(.2,.7,.2,1), border-color .2s, box-shadow .2s;
   }
+  .entry:nth-child(odd){ margin-left:0; transform:translateX(-24px); }
+  .entry:nth-child(even){ margin-left:calc(50% + 46px); transform:translateX(24px); }
+  .entry.is-revealed{ transform:translateX(0); }
+
   .entry::before{
     content:"";
     position:absolute; top:30px; width:11px; height:11px; border-radius:50%;
-    background:var(--ember); box-shadow:0 0 0 4px rgba(255,59,78,.18), 0 0 16px rgba(255,59,78,.55);
+    background:var(--ash-dim);
+    box-shadow:0 0 0 4px rgba(94,83,73,.15);
+    transition:background .4s, box-shadow .4s;
   }
-  .entry:nth-child(odd){ margin-left:0; }
+  .entry.is-active::before{
+    background:var(--ember);
+    box-shadow:0 0 0 4px rgba(255,59,78,.18), 0 0 16px rgba(255,59,78,.55);
+  }
   .entry:nth-child(odd)::before{ right:-51px; }
-  .entry:nth-child(even){ margin-left:calc(50% + 46px); }
   .entry:nth-child(even)::before{ left:-51px; }
 
   .entry:hover{ border-color:var(--blood); box-shadow:0 0 0 1px var(--blood), 0 20px 40px rgba(156,20,40,.18); }
@@ -312,7 +443,7 @@
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em;
     font-size:.82rem; color:var(--bone); text-decoration:none;
-    border-bottom:1px solid var(--ash-dim); padding-bottom:3px;
+    border-bottom:1px solid var(--ash-dim); padding:6px 0 8px;
     transition:border-color .2s, color .2s;
   }
   .entry-link:hover{ color:var(--ember); border-color:var(--ember); }
@@ -321,6 +452,7 @@
   .entry summary{
     cursor:pointer; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase;
     letter-spacing:.1em; font-size:.74rem; color:var(--ash-dim);
+    padding:8px 0; min-height:24px;
   }
   .entry details p{ margin-top:10px; font-size:.88rem; color:var(--ash); }
 
@@ -329,7 +461,17 @@
   @media(max-width:760px){
     .spine{left:10px;}
     .entry{width:calc(100% - 46px); margin-left:46px !important;}
+    .entry:nth-child(odd), .entry:nth-child(even){ transform:translateY(16px); }
+    .entry.is-revealed{ transform:translateY(0); }
     .entry::before{ left:-45px !important; right:auto !important; }
+  }
+
+  @media(max-width:480px){
+    .site-nav{ padding:0 16px; }
+    .wrap{ padding-left:0; padding-right:0; }
+    .statblock{ grid-template-columns:1fr; max-width:100%; }
+    .scrap img{ width:168px; height:168px; }
+    .entry{ padding:20px 18px; }
   }
 
   /* ===== COLOPHON ===== */
@@ -350,16 +492,45 @@
 <body>
 
 <div class="grain"></div>
-<div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+
+<header class="site-nav">
+  <nav class="site-nav-links" aria-label="Section navigation">
+    <ol class="nav-inline">
+{{nav.items}}
+    </ol>
+  </nav>
+  <button class="site-nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel">
+    <span>Index</span>
+    <span class="site-nav-toggle-bars" aria-hidden="true"></span>
+  </button>
+  <div class="nav-progress"><div class="nav-progress-fill" id="navProgressFill"></div></div>
+</header>
+
+<div class="nav-backdrop" id="navBackdrop"></div>
+<nav class="nav-panel" id="navPanel" aria-label="Section index">
+  <ol class="nav-list">
+{{nav.items}}
+  </ol>
+</nav>
 
 <div class="wrap">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="top">
     <svg class="hero-slash" viewBox="0 0 400 500" aria-hidden="true">
       <path d="M40 20 C 180 120, 60 260, 260 480" stroke="#9c1428" stroke-width="10" fill="none" opacity="0.55" stroke-linecap="round"/>
       <path d="M20 90 C 160 160, 40 300, 220 470" stroke="#ff3b4e" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
     </svg>
+    <div class="embers" aria-hidden="true">
+      <span style="left:6%; animation-delay:0s; animation-duration:15s;"></span>
+      <span style="left:16%; animation-delay:4s; animation-duration:19s;"></span>
+      <span style="left:28%; animation-delay:1.5s; animation-duration:16s;"></span>
+      <span style="left:41%; animation-delay:7s; animation-duration:21s;"></span>
+      <span style="left:55%; animation-delay:2.5s; animation-duration:17s;"></span>
+      <span style="left:68%; animation-delay:5.5s; animation-duration:20s;"></span>
+      <span style="left:80%; animation-delay:0.8s; animation-duration:18s;"></span>
+      <span style="left:91%; animation-delay:6.2s; animation-duration:16s;"></span>
+    </div>
     <div class="hero-copy">
       <span class="eyebrow">A Living Record — Vol. I</span>
       <h1 class="hero-title">TREY<em>PLESCHER</em></h1>
@@ -372,12 +543,12 @@
       <span class="scroll-cue">&darr; scroll — keep reading</span>
     </div>
     <div class="hero-figure">
-      <img src="photos/hero.png" alt="Trey Plescher, seen from behind, wearing a black hoodie with a dramatic pink ink-style graphic across the back." />
+      <img src="photos/hero.png" alt="Trey Plescher, seen from behind, wearing a black hoodie with a dramatic pink ink-style graphic across the back." fetchpriority="high" />
     </div>
   </section>
 
   <!-- CHAPTER 01 -->
-  <section class="chapter">
+  <section class="chapter" id="chapter-01">
     <div class="chapter-marker">
       <div class="chapter-num">01</div>
       <div class="chapter-label">{{chapter01.label}}</div>
@@ -399,7 +570,7 @@
   </section>
 
   <!-- CHAPTER 02 -->
-  <section class="chapter">
+  <section class="chapter" id="chapter-02">
     <div class="chapter-marker">
       <div class="chapter-num">02</div>
       <div class="chapter-label">{{chapter02.label}}</div>
@@ -415,7 +586,7 @@
   </section>
 
   <!-- CHAPTER 03 -->
-  <section class="chapter">
+  <section class="chapter" id="chapter-03">
     <div class="chapter-marker">
       <div class="chapter-num">03</div>
       <div class="chapter-label">{{chapter03.label}}</div>
@@ -428,14 +599,14 @@
         <cite>{{chapter03.quote_by}}</cite>
       </blockquote>
       <div class="scrap scrap-solo">
-        <img src="photos/scrap-soccer.png" alt="Trey as a young child, kneeling on a soccer field by the goal." />
-        <div class="scrap-cap">before the page</div>
+        <img src="photos/scrap-soccer.png" alt="Trey as a young child, kneeling on a soccer field by the goal." loading="lazy" decoding="async" />
+        <div class="scrap-cap">Before the Ink</div>
       </div>
     </div>
   </section>
 
   <!-- CHAPTER 04 -->
-  <section class="chapter">
+  <section class="chapter" id="chapter-04">
     <div class="chapter-marker">
       <div class="chapter-num">04</div>
       <div class="chapter-label">{{chapter04.label}}</div>
@@ -447,7 +618,7 @@
   </section>
 
   <!-- CHAPTER 05 -->
-  <section class="chapter">
+  <section class="chapter" id="chapter-05">
     <div class="chapter-marker">
       <div class="chapter-num">05</div>
       <div class="chapter-label">{{chapter05.label}}</div>
@@ -460,43 +631,43 @@
       </div>
       <div class="scrap-row">
         <div class="scrap">
-          <img src="photos/scrap-christmas.png" alt="Trey with family at Christmas, holding a newborn, wearing Santa hats." />
-          <div class="scrap-cap">home</div>
+          <img src="photos/scrap-christmas.png" alt="Trey with family at Christmas, holding a newborn, wearing Santa hats." loading="lazy" decoding="async" />
+          <div class="scrap-cap">The Hearth Holds</div>
         </div>
         <div class="scrap">
-          <img src="photos/scrap-prom.png" alt="Trey and friends laughing together, dressed up for a dance." />
-          <div class="scrap-cap">friends</div>
+          <img src="photos/scrap-prom.png" alt="Trey with family, dressed up and laughing together before a dance." loading="lazy" decoding="async" />
+          <div class="scrap-cap">Borrowed Light</div>
         </div>
         <div class="scrap">
-          <img src="photos/scrap-baby.png" alt="Trey smiling, holding a newborn in a hospital room." />
-          <div class="scrap-cap">family</div>
+          <img src="photos/scrap-baby.png" alt="Trey smiling, holding a newborn in a hospital room." loading="lazy" decoding="async" />
+          <div class="scrap-cap">A New Weight</div>
         </div>
         <div class="scrap">
-          <img src="photos/scrap-bus.png" alt="Trey and a friend on a bus, making faces at the camera." />
-          <div class="scrap-cap">on the road</div>
+          <img class="scrap-img-right" src="photos/scrap-bus.png" alt="Trey and a friend on a bus, making faces at the camera." loading="lazy" decoding="async" />
+          <div class="scrap-cap">In Transit</div>
         </div>
         <div class="scrap">
-          <img src="photos/scrap-siblings.png" alt="Two young siblings sitting together on a staircase." />
-          <div class="scrap-cap">fragments</div>
+          <img src="photos/scrap-siblings.png" alt="Two young siblings sitting together on a staircase." loading="lazy" decoding="async" />
+          <div class="scrap-cap">Before the Climb</div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- VOLUME II -->
-  <section class="volume-break">
+  <section class="volume-break" id="bibliography">
     <span class="volume-eyebrow">{{volume.eyebrow}}</span>
     <h2 class="volume-title">{{volume.title}}</h2>
     <p class="volume-sub">{{volume.subtitle}}</p>
   </section>
 
-  <section class="timeline">
-    <div class="spine"></div>
+  <section class="timeline" id="timelineTrack">
+    <div class="spine"><div class="spine-fill" id="spineFill"></div></div>
     {{timeline.entries}}
   </section>
 
   <!-- COLOPHON -->
-  <footer class="colophon">
+  <footer class="colophon" id="colophon">
     <p class="colophon-line">{{colophon.line}}</p>
     <p class="colophon-meta">{{colophon.meta}}</p>
   </footer>
@@ -504,32 +675,96 @@
 </div>
 
 <script>
-  var fill = document.getElementById('progressFill');
-  function onScroll(){
+  // header reading progress (whole document)
+  var navFill = document.getElementById('navProgressFill');
+  function onScrollProgress(){
     var h = document.documentElement;
     var scrolled = h.scrollTop;
     var max = h.scrollHeight - h.clientHeight;
     var pct = max > 0 ? (scrolled / max) * 100 : 0;
-    if (fill) fill.style.height = pct + '%';
+    if (navFill) navFill.style.width = pct + '%';
   }
-  document.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  document.addEventListener('scroll', onScrollProgress, { passive: true });
+  onScrollProgress();
 
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    var targets = document.querySelectorAll('.chapter, .entry');
-    targets.forEach(function(el){
-      el.style.transition = 'transform .7s cubic-bezier(.2,.7,.2,1)';
-      el.style.transform = 'translateY(14px)';
+  // timeline spine fill (scoped to the bibliography section)
+  var spineFill = document.getElementById('spineFill');
+  var timelineTrack = document.getElementById('timelineTrack');
+  function onSpineScroll(){
+    if (!spineFill || !timelineTrack) return;
+    var rect = timelineTrack.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var total = rect.height + vh;
+    var passed = vh - rect.top;
+    var pct = Math.max(0, Math.min(1, total > 0 ? passed / total : 0)) * 100;
+    spineFill.style.height = pct + '%';
+  }
+  document.addEventListener('scroll', onSpineScroll, { passive: true });
+  window.addEventListener('resize', onSpineScroll);
+  onSpineScroll();
+
+  // nav panel open/close
+  var navToggle = document.getElementById('navToggle');
+  var navPanel = document.getElementById('navPanel');
+  var navBackdrop = document.getElementById('navBackdrop');
+  function openNav(){
+    document.body.classList.add('nav-open');
+    if (navToggle) navToggle.setAttribute('aria-expanded', 'true');
+  }
+  function closeNav(){
+    document.body.classList.remove('nav-open');
+    if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+  }
+  if (navToggle) {
+    navToggle.addEventListener('click', function(){
+      document.body.classList.contains('nav-open') ? closeNav() : openNav();
     });
-    var io = new IntersectionObserver(function(entries){
+  }
+  if (navBackdrop) navBackdrop.addEventListener('click', closeNav);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeNav(); });
+  document.querySelectorAll('.nav-list a').forEach(function(a){
+    a.addEventListener('click', closeNav);
+  });
+
+  // active-section highlighting in the index panel
+  var navLinks = {};
+  document.querySelectorAll('.nav-list a').forEach(function(a){
+    var id = a.getAttribute('href').replace('#', '');
+    navLinks[id] = a;
+  });
+  var sectionEls = Object.keys(navLinks)
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+  if ('IntersectionObserver' in window && sectionEls.length) {
+    var navObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var link = navLinks[entry.target.id];
+        if (!link || !entry.isIntersecting) return;
+        Object.keys(navLinks).forEach(function(k){ navLinks[k].classList.remove('is-active'); });
+        link.classList.add('is-active');
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    sectionEls.forEach(function(el){ navObserver.observe(el); });
+  }
+
+  // reveal-on-scroll for chapters + timeline entries, and lit timeline nodes
+  var revealTargets = document.querySelectorAll('.chapter, .entry');
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    var revealObserver = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if (entry.isIntersecting) {
-          entry.target.style.transform = 'translateY(0)';
-          io.unobserve(entry.target);
+          entry.target.classList.add('is-revealed');
+          if (entry.target.classList.contains('entry')) entry.target.classList.add('is-active');
+          revealObserver.unobserve(entry.target);
         }
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-    targets.forEach(function(el){ io.observe(el); });
+    revealTargets.forEach(function(el){ revealObserver.observe(el); });
+  } else {
+    revealTargets.forEach(function(el){
+      el.classList.add('is-revealed');
+      if (el.classList.contains('entry')) el.classList.add('is-active');
+    });
   }
 </script>
 </body>
