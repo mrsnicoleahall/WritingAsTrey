@@ -466,11 +466,20 @@
     .entry::before{ left:-45px !important; right:auto !important; }
   }
 
+  @media(max-width:600px){
+    .scrap-row{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:18px 14px;
+    }
+    .scrap-row .scrap{ transform:none !important; margin-top:0 !important; width:100%; }
+    .scrap-row .scrap img{ width:100%; height:auto; aspect-ratio:1 / 1; }
+  }
+
   @media(max-width:480px){
     .site-nav{ padding:0 16px; }
     .wrap{ padding-left:0; padding-right:0; }
     .statblock{ grid-template-columns:1fr; max-width:100%; }
-    .scrap img{ width:168px; height:168px; }
     .entry{ padding:20px 18px; }
   }
 
