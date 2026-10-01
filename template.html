@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trey Plescher — Written Works</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
@@ -127,10 +132,10 @@
     filter:drop-shadow(0 30px 60px rgba(0,0,0,.7)) drop-shadow(0 0 40px rgba(156,20,40,.25));
   }
   .scroll-cue{
-    position:absolute; bottom:-6px; left:50%; transform:translateX(-50%);
+    display:block;
+    margin-top:46px;
     font-family:'Barlow Condensed',sans-serif; letter-spacing:.3em; text-transform:uppercase;
     font-size:.75rem; color:var(--ash-dim);
-    writing-mode:vertical-rl;
   }
 
   @media(max-width:860px){
@@ -341,6 +346,8 @@
     font-size:.82rem; text-align:right;
   }
 </style>
+</head>
+<body>
 
 <div class="grain"></div>
 <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
@@ -362,10 +369,10 @@
         <span>Sophomore — <b>{{hero.school}}</b></span>
         <span>{{hero.stat}}</span>
       </div>
+      <span class="scroll-cue">&darr; scroll — keep reading</span>
     </div>
     <div class="hero-figure">
       <img src="photos/hero.png" alt="Trey Plescher, seen from behind, wearing a black hoodie with a dramatic pink ink-style graphic across the back." />
-      <span class="scroll-cue">scroll — keep reading</span>
     </div>
   </section>
 
@@ -525,3 +532,5 @@
     targets.forEach(function(el){ io.observe(el); });
   }
 </script>
+</body>
+</html>

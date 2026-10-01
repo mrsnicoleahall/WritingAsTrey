@@ -1,7 +1,7 @@
 # Hero
 Tagline: I would rather change one person's life than just be mentioned by thousands.
 Age: 16
-School: Leesville Road HS — Sophomore
+School: Leesville Road HS
 Stat: 9 works documented, more unwritten
 
 # Chapter 01
