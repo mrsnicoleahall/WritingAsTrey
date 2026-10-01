@@ -1,0 +1,9 @@
+{
+  "name": "writing-as-trey",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Trey Plescher's writing portfolio — built from content.md on every push.",
+  "scripts": {
+    "build": "node build.js"
+  }
+}
