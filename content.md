@@ -62,6 +62,13 @@ I've played in my school's symphonic and marching band since 6th grade — tuba 
 
 Tags: Rhythm Games — Top 500, Tuba / Sousaphone, Marching Band — Yr. 5, Chainsaw Man, JoJo's Bizarre Adventure, Bleach
 
+# Chapter 06
+Label: The Statement
+Title: Artist Statement
+
+Body:
+To me, culture isn't just based on traditions or family heritage; it lives in the tiny subcommunities you may find yourself in while playing too late at night. My culture is at the crossroads of gaming, writing, and anime. When the world tries to put me into boxes, my passions give me a way to process all of that stress from school, heartbreak, and overthinking. Writing and playing video games may seem like simple hobbies to some people, but to me, they mean to continuously respawn, better than ever before.
+
 # Volume
 Eyebrow: Volume II
 Title: The Bibliography
@@ -145,6 +152,14 @@ Easter-Egg: A4, C3, E4, H1 at 3:20, K1 at 4:15, R1 at 15:22 — or A5, Brown Noi
 
 Blurb:
 Six pages I wrote, six stages of Alzheimer's, each page its own moment in time. I drew heavy inspiration from EATEOT.
+
+## Entry
+Title: 60 Frames Per Second
+Date: October 2026
+Link: https://docs.google.com/document/d/1ei1OMde_J35fhGRIk_v2e-f9vfXoTuGgOqqyg7Ffqd0/edit?usp=sharing
+
+Blurb:
+Five sections I wrote about myself, named like a game I never finish: The Main Menu, The Past, The Grind, The Climb, The Spawnpoint. Overthinking, family loyalty, a school system that doesn't fit how my mind works, the friends I find through anime and manga — ending where I always end up: writing as the place pain turns into something made.
 
 ## Entry
 Title: Switch

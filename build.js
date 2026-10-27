@@ -34,6 +34,7 @@ const SECTION_TO_KEY = {
   'Chapter 03': 'chapter03',
   'Chapter 04': 'chapter04',
   'Chapter 05': 'chapter05',
+  'Chapter 06': 'chapter06',
   'Volume': 'volume',
   'Colophon': 'colophon',
   'Timeline': 'timeline',
@@ -179,6 +180,7 @@ function renderNavItems(data) {
     { id: 'chapter-03', num: '03', label: get(data.chapter03, 'Label', 'Scars') },
     { id: 'chapter-04', num: '04', label: get(data.chapter04, 'Label', 'The Craft') },
     { id: 'chapter-05', num: '05', label: get(data.chapter05, 'Label', 'Beyond the Page') },
+    { id: 'chapter-06', num: '06', label: get(data.chapter06, 'Label', 'The Statement') },
     { id: 'bibliography', num: 'II', label: get(data.volume, 'Title', 'The Bibliography') },
     { id: 'colophon', num: '—', label: 'Colophon' },
   ];
@@ -229,6 +231,10 @@ function build() {
     'chapter05.title': inline(get(data.chapter05, 'Title')),
     'chapter05.body': paragraphs(get(data.chapter05, 'Body')),
     'chapter05.tags': renderTags(get(data.chapter05, 'Tags')),
+
+    'chapter06.label': inline(get(data.chapter06, 'Label')),
+    'chapter06.title': inline(get(data.chapter06, 'Title')),
+    'chapter06.body': paragraphs(get(data.chapter06, 'Body')),
 
     'volume.eyebrow': inline(get(data.volume, 'Eyebrow')),
     'volume.title': inline(get(data.volume, 'Title')),
